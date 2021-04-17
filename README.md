@@ -79,4 +79,34 @@ if __name__ == "__main__":
     SOCK.close()
 ```
 
-This is the satrting code for out server. It will listen for 5 clients at max but that can be changed if needed. We then start the thread that handles <code>accept_incoming_connections()</code>. In order to prevent the server from closing, we use the <code>join()</code> function. This will act as a hold on any starting thread and they will run infintely unless forced to close.
+This is the starting code for out server. It will listen for 5 clients at max but that can be changed if needed. We then start the thread that handles <code>accept_incoming_connections()</code>. In order to prevent the server from closing, we use the <code>join()</code> function. This will act as a hold on any starting thread and they will run infintely unless forced to close.
+
+### Client.py
+
+For the client part, we'll be using TKinter to have a basic GUI in order and have functions to handle receiving and sending messages
+
+```python
+def receive():
+    """ Handles receiving of messages. """
+    while True:
+        try:
+            msg = sock.recv(BUFSIZ).decode("utf8")
+            msg_list.insert(tkinter.END, msg)
+        except OSError:  # Possibly client has left the chat.
+            break
+```
+
+This function will take care of receiving messages. Once a message is received, it will append it to the <code>msg_list</code> The latter is the tkinter element where all msgs will be displayed. The whole lot is placed in a try block in the case where the client has terminated the connection.
+
+```python
+def send(event=None):
+    """ Handles sending of messages. """
+    msg = my_msg.get()
+    my_msg.set("")  # Clears input field.
+    sock.send(bytes(msg, "utf8"))
+    if msg == "#quit":
+        sock.close()
+        top.quit()
+```
+
+<code>my_msg</code> is the input field from where we can get the message. After getting it, we can clear out the input field.We then send that message to the server who broadcasts this message to every client. If the message is #quit, then we close that connection and terminate top which is the tkinter container.
