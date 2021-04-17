@@ -30,17 +30,21 @@ def on_closing(event=None):
 
 def smiley_button_tieup(event=None):
     """ Function for smiley button action """
-    my_msg.set(":)")    # A common smiley character
-    send()
+    my_msg.set(":)")
+    msg = my_msg.get()  # A common smiley character
+    sock.send(bytes(msg, "utf8"))
+    my_msg.set("")
 
 def sad_button_tieup(event=None):
     """ Function for smiley button action """
     my_msg.set(":(")    # A common smiley character
-    send()
+    msg = my_msg.get()
+    sock.send(bytes(msg, "utf8"))
+    my_msg.set("")
 
 
 top = tkinter.Tk()
-top.title("Simple Chat Client v1.0")
+top.title("Instant Messenger v1.0.0")
 messages_frame = tkinter.Frame(top)
 
 my_msg = tkinter.StringVar()  # For the messages to be sent.
