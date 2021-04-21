@@ -1,6 +1,7 @@
 """ Script for Tkinter GUI chat client. """
 
 import tkinter
+from tkinter.filedialog import askopenfilename
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 
@@ -16,8 +17,8 @@ def receive():
 
 def send(event=None):
     """ Handles sending of messages. """
-    msg = my_msg.get()
-    my_msg.set("")  # Clears input field.
+    msg = var.get()
+    var.set("")  # Clears input field.
     sock.send(bytes(msg, "utf8"))
     if msg == "#quit":
         sock.close()
@@ -25,55 +26,71 @@ def send(event=None):
 
 def on_closing(event=None):
     """ This function is to be called when the window is closed. """
-    my_msg.set("#quit")
+    var.set("#quit")
     send()
 
 def smiley_button_tieup(event=None):
     """ Function for smiley button action """
-    my_msg.set(":)")
-    msg = my_msg.get()  # A common smiley character
+    var.set(":)")
+    msg = var.get()  # A common smiley character
     sock.send(bytes(msg, "utf8"))
-    my_msg.set("")
+    var.set("")
 
 def sad_button_tieup(event=None):
     """ Function for smiley button action """
-    my_msg.set(":(")    # A common smiley character
-    msg = my_msg.get()
+    var.set(":(")    # A common smiley character
+    msg = var.get()
     sock.send(bytes(msg, "utf8"))
-    my_msg.set("")
+    var.set("")
+
+def on_enter(e):
+    quit_button['background'] = 'red'
+
+def on_leave(e):
+    quit_button['background'] = 'white'
+
+def send_file(event=None):
+    tkinter.Tk().withdraw()
+    filename = askopenfilename()
+    file = open(filename, "rb")
+    SendData = file.read(1024).decode('utf8')
+    sock.send(bytes(SendData, "utf8"))
 
 
 top = tkinter.Tk()
 top.title("Instant Messenger v1.0.0")
 messages_frame = tkinter.Frame(top)
 
-my_msg = tkinter.StringVar()  # For the messages to be sent.
-my_msg.set("")
+var = tkinter.StringVar()
+var.set("")
 scrollbar = tkinter.Scrollbar(messages_frame)  # To navigate through past messages.
-msg_list = tkinter.Listbox(messages_frame, height=15, width=70, yscrollcommand=scrollbar.set)
+msg_list = tkinter.Listbox(messages_frame, height=15, width=70, yscrollcommand=scrollbar.set, bg="darkgray")
 scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
-msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
 msg_list.pack()
 
 messages_frame.pack()
 
-button_label = tkinter.Label(top, text="Enter Message:")
+button_label = tkinter.Label(top, text="Enter Message:", background="white")
 button_label.pack()
-entry_field = tkinter.Entry(top, textvariable=my_msg, foreground="Red")
+entry_field = tkinter.Entry(top, textvariable=var, foreground="Black")
 entry_field.bind("<Return>", send)
 entry_field.pack()
-send_button = tkinter.Button(top, text="Send", command=send)
+send_button = tkinter.Button(top, text="Send", command=send, background="white")
 send_button.pack(side='left', ipadx=100)
 smiley_button = tkinter.Button(top, text=":)", command=smiley_button_tieup)
 smiley_button.pack(side='left')
 sad_button = tkinter.Button(top, text=":(", command=sad_button_tieup)
 sad_button.pack(side='left')
 
-quit_button = tkinter.Button(top, text="Quit", command=on_closing, bg='red')
+quit_button = tkinter.Button(top, text="Quit", command=on_closing)
+quit_button.bind("<Enter>", on_enter)
+quit_button.bind("<Leave>", on_leave)
 quit_button.pack(side='left', ipadx=100)
 
-top.protocol("WM_DELETE_WINDOW", on_closing)
+sendFile_button = tkinter.Button(top, text="Send File", command=send_file)
+sendFile_button.pack(side='left')
 
+top.protocol("WM_DELETE_WINDOW", on_closing)
 
 BUFSIZ = 1024
 ADDR = ('localhost', 5000)
