@@ -51,8 +51,8 @@ def broadcast(msg, prefix=""):  # prefix is for name identification.
 
 if __name__ == "__main__":
     SOCK.listen(5)  # Listens for 5 connections at max.
-    print("Chat Server has Started !!")
-    print("Waiting for connections...")
+    print("Server has started !!")
+    print("Allowing for connections...")
     ACCEPT_THREAD = Thread(target=accept_incoming_connections)
     ACCEPT_THREAD.start()  # Starts the infinite loop.
     ACCEPT_THREAD.join()
