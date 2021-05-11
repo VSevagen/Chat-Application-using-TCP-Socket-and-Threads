@@ -12,7 +12,7 @@ def receive():
         try:
             msg = sock.recv(BUFSIZ).decode("utf8")
             msg_list.insert(tkinter.END, msg)
-        except OSError:  # Possibly client has left the chat.
+        except OSError:
             break
 
 def send(event=None):
@@ -50,11 +50,10 @@ def on_leave(e):
     quit_button['background'] = 'white'
 
 def send_file(event=None):
-    tkinter.Tk().withdraw()
     filename = askopenfilename()
     file = open(filename, "rb")
-    SendData = file.read(1024).decode('utf8')
-    sock.send(bytes(SendData, "utf8"))
+    SendData = file.read(1024)
+    sock.send(SendData)
 
 
 top = tkinter.Tk()

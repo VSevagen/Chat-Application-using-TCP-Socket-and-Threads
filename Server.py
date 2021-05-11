@@ -43,14 +43,14 @@ def handle_client(conn, addr):  # Takes client socket as argument.
             break
 
 
-def broadcast(msg, prefix=""):  # prefix is for name identification.
+def broadcast(msg, prefix=""):
     """Broadcasts a message to all the clients."""
     for conn in clients:
         conn.send(bytes(prefix, "utf8") + msg)
 
 
 if __name__ == "__main__":
-    SOCK.listen(5)  # Listens for 5 connections at max.
+    SOCK.listen(5)
     print("Server has started !!")
     print("Allowing for connections...")
     ACCEPT_THREAD = Thread(target=accept_incoming_connections)
